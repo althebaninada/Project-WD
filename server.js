@@ -87,7 +87,37 @@ app.post("/login", (req, res) => {
     }
   });
 });
+db.query(`
+CREATE TABLE IF NOT EXISTS bookings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  userEmail VARCHAR(100),
+  fullName VARCHAR(100),
+  bookingEmail VARCHAR(100),
+  movie VARCHAR(100),
+  date VARCHAR(50),
+  time VARCHAR(50),
+  seats VARCHAR(255),
+  totalPrice INT
+)
+`);
 
+app.post("/book", (req, res) => {
+  const { userEmail, fullName, bookingEmail, movie, date, time, seats, totalPrice } = req.body;
+
+  const sql = `
+    INSERT INTO bookings 
+    (userEmail, fullName, bookingEmail, movie, date, time, seats, totalPrice)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [userEmail, fullName, bookingEmail, movie, date, time, seats, totalPrice], (err) => {
+    if (err) {
+      return res.json({ success: false });
+    }
+
+    res.json({ success: true });
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

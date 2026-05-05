@@ -1,7 +1,8 @@
+// SIGN UP
 const signupForm = document.getElementById("signupForm");
 
 if (signupForm) {
-  signupForm.addEventListener("submit", function (e) {
+  signupForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const name = document.getElementById("signupName").value;
@@ -13,23 +14,34 @@ if (signupForm) {
       return;
     }
 
-    const user = {
-      name,
-      email,
-      password
-    };
+    const res = await fetch("http://localhost:3000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, password })
+    });
 
-    localStorage.setItem("cinemaUser", JSON.stringify(user));
-    localStorage.setItem("isLoggedIn", "true");
+    const data = await res.json();
 
-    window.location.href = "index.html";
+    if (data.success) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userEmail", email);
+
+      window.location.href = "index.html";
+    } else {
+      alert(data.message);
+    }
   });
 }
+
+
 // SIGN IN
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-  loginForm.addEventListener("submit", function (e) {
+  loginForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const email = document.getElementById("loginEmail").value;
@@ -40,23 +52,24 @@ if (loginForm) {
       return;
     }
 
-    // نجيب المستخدم المخزن
-    const savedUser = JSON.parse(localStorage.getItem("cinemaUser"));
+    const res = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-    // إذا ما فيه حساب
-    if (!savedUser) {
-      alert("No account found. Please sign up first.");
-      return;
-    }
+    const data = await res.json();
 
-    // تحقق من الإيميل والباسورد
-    if (email === savedUser.email && password === savedUser.password) {
+    if (data.success) {
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("userEmail", data.user.email);
 
       window.location.href = "index.html";
     } else {
-      alert("Wrong email or password ❌");
+      alert(data.message);
     }
   });
 }

@@ -22,7 +22,8 @@
                 <a href="lumiere-movies.html">Movies</a>
                 <a href="About-us.html">About Us</a>
                 <a href="contact-us.html">Contact Us</a>
-                <a href="login.html" class="login-btn">Log in</a>
+               <a href="login.html" id="loginLink">Log in</a>
+<a href="#" id="logoutBtn" style="display:none;">Logout</a>
             </nav>
         </div>
     </header>
@@ -165,16 +166,20 @@
     <p>Designed for Web Development Project</p>
   </footer>
   <script>
-  document.getElementById("exploreBtn").addEventListener("click", function(e) {
-    e.preventDefault();
+  const loginLink = document.getElementById("loginLink");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const userName = localStorage.getItem("userName");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
+  if (isLoggedIn === "true") {
+    loginLink.textContent = "Hi, " + (userName || "User");
+    loginLink.href = "#";
+    logoutBtn.style.display = "inline-block";
+  }
 
-    if (isLoggedIn === "true") {
-      window.location.href = "lumiere-movies.html";
-    } else {
-      window.location.href = "login.html";
-    }
+  logoutBtn.addEventListener("click", function () {
+    localStorage.clear();
+    window.location.href = "login.html";
   });
 </script>
 

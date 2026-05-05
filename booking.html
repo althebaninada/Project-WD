@@ -142,6 +142,57 @@
 <footer class="main-footer">
 <p>© 2026 Lumière Cinema</p>
 </footer>
+<script>
+  const confirmBtn = document.querySelector(".confirm-btn");
 
+  confirmBtn.addEventListener("click", async function () {
+    const userEmail = localStorage.getItem("userEmail");
+
+    if (!userEmail) {
+      alert("You must login first");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const fullName = document.querySelector(".booking-form input[type='text']").value;
+    const bookingEmail = document.querySelector(".booking-form input[type='email']").value;
+    const date = document.querySelector(".booking-form input[type='date']").value;
+    const time = document.querySelector(".booking-form select").value;
+
+    const selectedSeats = Array.from(
+      document.querySelectorAll(".seats input[type='checkbox']:checked")
+    ).map(seat => seat.id);
+
+    if (!fullName || !bookingEmail || !date || !time || selectedSeats.length === 0) {
+      alert("Please fill all booking information and select at least one seat");
+      return;
+    }
+
+    const res = await fetch("http://localhost:3000/book", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userEmail,
+        fullName,
+        bookingEmail,
+        movie: "Spider-Man",
+        date,
+        time,
+        seats: selectedSeats.join(", "),
+        totalPrice: selectedSeats.length * 25
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Booking confirmed successfully 🎟️");
+    } else {
+      alert("Booking failed");
+    }
+  });
+</script>
 </body>
 </html>
